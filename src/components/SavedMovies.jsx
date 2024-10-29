@@ -3,7 +3,7 @@ import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { UserAuth } from "../context/AuthContext";
 import { db } from "../firebase";
 import { updateDoc, doc, onSnapshot } from "firebase/firestore";
-import Movie from "./Movie";
+import { IoIosCloseCircle } from "react-icons/io";
 
 const SavedMovies = () => {
   const [movies, setMovies] = useState([]);
@@ -33,6 +33,21 @@ const SavedMovies = () => {
     }
   }, [user?.email]);
 
+
+const movieRef = doc(db,'users',`${user?.email}`);
+
+const deleteSaved = async(passedId)=>{
+try {
+    const result = movies.filter((item)=>item.id!==passedId);
+    await updateDoc(movieRef,{
+        savedMovies:result
+    });
+} catch (error) {
+ console.log(error);   
+}
+}
+
+
   return (
     <>
       <div className="relative flex items-center group">
@@ -59,6 +74,7 @@ const SavedMovies = () => {
                 <p className="whitespace-normal text-white text-xs md:text-sm font-bold flex justify-center items-center h-full text-center">
                   {item?.title}
                 </p>
+                <p onClick={()=>deleteSaved(item.id)} className=" text-gray-500 absolute top-2 right-2"><IoIosCloseCircle/></p>
               </div>
             </div>
           ))}
